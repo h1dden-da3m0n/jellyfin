@@ -1,0 +1,44 @@
+name: Auto bump_version
+
+on:
+  workflow_dispatch:
+    inputs:
+      NEXT_VERSION:
+        required: true
+        description: The next version to bump to (e.g. 10.10.10)
+      TARTGET_BRANCH:
+        required: false
+        description: If you want to bump the version on a branch besides the default
+
+jobs:
+  create_bump_version_pr:
+    name: Create Bump Version PR
+    runs-on: ubuntu-latest
+    env:
+      branchName: bump-${{ github.event.inputs.NEXT_VERSION }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.TARTGET_BRANCH }}
+
+      - name: Run bump_version
+        run: ./bump_version ${{ github.event.inputs.NEXT_VERSION }}
+
+      - name: Commit Changes
+        run: |-
+          git config user.name "jellyfin-bot"
+          git config user.email "team@jellyfin.org"
+          git checkout -b ${{ env.branchName }}
+          git commit -am "Bump version to ${{ github.event.inputs.NEXT_VERSION }}"
+          git push -f origin ${{ env.branchName }}
+
+      - name: Create Bump Version PR
+        uses: k3rnels-actions/pr-update@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: Prepare for release ${{ github.event.inputs.NEXT_VERSION }}
+          pr_source: ${{ env.branchName }}
+          pr_target: ${{ github.event.inputs.TARTGET_BRANCH }}
+          pr_body: |
+            :robot: This is a generated PR to bump the version for the next release.
