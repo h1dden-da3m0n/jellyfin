@@ -25,9 +25,9 @@ jobs:
 
       - name: Get Date
         id: get-date
+        shell: bash
         run: |
           echo "::set-output name=date::$(/bin/date -u "+%Y%m")"
-        shell: bash
 
       - uses: actions/cache@v2
         with:
@@ -42,9 +42,12 @@ jobs:
           dotnet-version: '5.0.x'
 
       - name: Run Tests
-        run: >-
-          dotnet test tests/*/*Tests.csproj
-            --configuration Release
-            --collect:"XPlat Code Coverage"
-            --settings tests/coverletArgs.runsettings
-            --verbosity minimal
+        shell: bash
+        run: |-
+          for testProje in tests/*/*Tests.csproj; do
+            dotnet test ${testProje} \
+              --configuration Release \
+              --collect:"XPlat Code Coverage" \
+              --settings tests/coverletArgs.runsettings \
+              --verbosity minimal
+          done
