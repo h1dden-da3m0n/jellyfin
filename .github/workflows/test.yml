@@ -1,0 +1,50 @@
+name: ':microscope: Run Tests'
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request_target:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "::set-output name=date::$(/bin/date -u "+%Y%m")"
+        shell: bash
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ steps.get-date.outputs.date }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Run Tests
+        run: >-
+          dotnet test tests/*/*Tests.csproj
+            --configuration Release
+            --collect:"XPlat Code Coverage"
+            --settings tests/coverletArgs.runsettings
+            --verbosity minimal
