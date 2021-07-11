@@ -1,4 +1,4 @@
-name: ':microscope: Run Tests'
+name: '🔬 Run Tests'
 
 on:
   push:
@@ -11,7 +11,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
+  test:
+    name: JF Tests
     strategy:
       matrix:
         os:
@@ -19,6 +20,7 @@ jobs:
           - windows-latest
           - macos-latest
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -44,10 +46,14 @@ jobs:
       - name: Run Tests
         shell: bash
         run: |-
-          for testProje in tests/*/*Tests.csproj; do
-            dotnet test ${testProje} \
+          for testProj in tests/Jellyfin.Naming.Tests/*Tests.csproj; do
+            dotnet test ${testProj} \
               --configuration Release \
               --collect:"XPlat Code Coverage" \
               --settings tests/coverletArgs.runsettings \
               --verbosity minimal
           done
+
+      - name: Debug List
+        shell: bash
+        run: ls -lR tests/Jellyfin.Naming.Tests/
