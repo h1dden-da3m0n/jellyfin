@@ -57,8 +57,9 @@ jobs:
       - name: Set Envs
         shell: bash
         run: |
+          BRANCH="${{ github.ref }}"
           echo "VERSION=$(cat build.yaml | sed -En 's/^version: "(.+)"$/\1/p')" >> $GITHUB_ENV
-          echo "BRANCH=${${{ github.ref }}#refs/heads/}" >> $GITHUB_ENV
+          echo "BRANCH=${BRANCH#refs/heads/}" >> $GITHUB_ENV
 
       - name: Build and analyze
         env:
