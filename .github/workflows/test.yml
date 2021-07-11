@@ -56,19 +56,6 @@ jobs:
               --nologo
           done
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v1.6
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >-
-            -Dsonar.organization=h1dden-da3m0n
-            -Dsonar.projectKey=h1dden-da3m0n_jellyfin
-            -Dsonar.cs.xunit.reportsPaths=tests/**/*.trx
-            -Dsonar.cs.opencover.reportsPaths=tests/**/coverage.cobertura.xml
-
       - uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
