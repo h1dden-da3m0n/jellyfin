@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
+  </PropertyGroup>
+</Project>
