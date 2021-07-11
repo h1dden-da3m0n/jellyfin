@@ -58,7 +58,7 @@ jobs:
               --logger "trx;LogFileName=test-results.trx" `
               --verbosity minimal `
               --nologo `
-              --DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+              -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           }
           
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
