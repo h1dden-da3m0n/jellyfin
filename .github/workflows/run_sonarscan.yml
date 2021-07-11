@@ -50,7 +50,7 @@ jobs:
             /d:sonar.coverage.exclusions="**Test*.cs"
           
           foreach ($testProj in Get-ChildItem -Path "./tests/" -Recurse -Filter "*Tests.csproj") {
-            dotnet test $testProj `
+            dotnet test $testProj.FullName `
               --configuration Release `
               --collect:"XPlat Code Coverage" `
               --results-directory TestResults/ `
