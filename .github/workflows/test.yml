@@ -64,6 +64,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >-
+            -Dsonar.organization=h1dden-da3m0n
+            -Dsonar.projectKey=h1dden-da3m0n_jellyfin
             -Dsonar.cs.xunit.reportsPaths=tests/**/*.trx
             -Dsonar.cs.opencover.reportsPaths=tests/**/coverage.cobertura.xml
 
