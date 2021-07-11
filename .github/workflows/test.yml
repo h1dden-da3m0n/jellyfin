@@ -51,7 +51,9 @@ jobs:
               --configuration Release \
               --collect:"XPlat Code Coverage" \
               --settings tests/coverletArgs.runsettings \
-              --verbosity minimal
+              --logger trx \
+              --verbosity minimal \
+              --nologo
           done
 
       - name: Debug List
