@@ -50,7 +50,7 @@ jobs:
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v2
-        if: ${{ matrix.build-config == Release }}
+        if: ${{ matrix.build-config == 'Release' }}
         with:
           name: server-artifacts
           path: |-
