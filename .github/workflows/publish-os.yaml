@@ -48,21 +48,23 @@ jobs:
       - name: Run Packaging Container (stable)
         if: ${{ contains(github.ref, 'refs/tags/v') }}
         run: |-
+          mkdir -p deployment/dist
           podman run --rm \
             -v $(pwd)/deployment/dist:/dist \
             -v $(pwd):/jellyfin \
             -e IS_UNSTABLE="no" \
-            -e BUILD_ID=$(Build.BuildNumber) \
+            -e BUILD_ID=${{ github.run_id }} \
             jellyfin-server:${{ matrix.build-config }}
 
       - name: Run Packaging Container (unstable)
         if: ${{ ! contains(github.ref, 'refs/tags/v') }}
         run: |-
+          mkdir -p deployment/dist
           podman run --rm \
             -v $(pwd)/deployment/dist:/dist \
             -v $(pwd):/jellyfin \
             -e IS_UNSTABLE="yes" \
-            -e BUILD_ID=$(Build.BuildNumber) \
+            -e BUILD_ID=${{ github.run_id }} \
             jellyfin-server:${{ matrix.build-config }}
 
       - name: debug
