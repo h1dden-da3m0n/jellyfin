@@ -18,7 +18,6 @@ jobs:
         build-config:
           - amd64
           - arm64
-          - armhf
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
