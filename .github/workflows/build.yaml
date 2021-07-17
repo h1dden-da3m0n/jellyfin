@@ -47,6 +47,7 @@ jobs:
             --configuration ${{ matrix.build-config }} \
             --output ci-artifact \
             --nologo
+          ls -lR ci-artifact
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v2
