@@ -26,7 +26,7 @@ jobs:
       - name: Setup YQ
         uses: chrisdickinson/setup-yq@latest
         with:
-          yq-version: v4.10.0
+          yq-version: v4.7.0
 
       - name: Setup Variables
         run: |
@@ -36,7 +36,7 @@ jobs:
 
           VERSION=$(yq e '.version' build.yaml)
           echo "STAGE=${STAGE:-unstable}" >> $GITHUB_ENV
-          #echo "MAJOR_MINOR=${VERSION%.*}" >> $GITHUB_ENV
+          echo "MAJOR_MINOR=${VERSION%.*}" >> $GITHUB_ENV
           echo "SEMVER=${VERSION}" >> $GITHUB_ENV
           echo "SHORT_SHA=${GITHUB_SHA::8}" >> $GITHUB_ENV
 
@@ -47,6 +47,7 @@ jobs:
           image: jellyfin-server
           tags: >-
             ${{ env.STAGE }}-${{ matrix.build-config }}
+            ${{ env.STAGE }}-${{ env.MAJOR_MINOR }}-${{ matrix.build-config }}
             ${{ env.STAGE }}-${{ env.SEMVER }}-${{ matrix.build-config }}
             ${{ env.SHORT_SHA }}-${{ matrix.build-config }}
           oci: true
