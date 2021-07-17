@@ -26,7 +26,7 @@ jobs:
       - name: Setup YQ
         uses: chrisdickinson/setup-yq@latest
         with:
-          yq-version: v4.7.0
+          yq-version: v4.9.8
 
       - name: Setup Variables
         run: |
