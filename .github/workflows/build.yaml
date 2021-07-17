@@ -47,7 +47,6 @@ jobs:
             --configuration ${{ matrix.build-config }} \
             --output ci-artifact \
             --nologo
-          ls -lR ci-artifact
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v2
@@ -55,7 +54,7 @@ jobs:
         with:
           name: server-artifacts
           path: |-
-            ci-artifact/Jellyfin.Server/Emby.Naming.dll
-            ci-artifact/Jellyfin.Server/MediaBrowser.Controller.dll
-            ci-artifact/Jellyfin.Server/MediaBrowser.Model.dll
-            ci-artifact/Jellyfin.Server/MediaBrowser.Common.dll
+            ci-artifact/Emby.Naming.dll
+            ci-artifact/MediaBrowser.Controller.dll
+            ci-artifact/MediaBrowser.Model.dll
+            ci-artifact/MediaBrowser.Common.dll
