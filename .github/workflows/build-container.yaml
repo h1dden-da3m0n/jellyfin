@@ -34,8 +34,8 @@ jobs:
             STAGE='stable'
           fi
 
-          VERTSION=`yq e '.version' build.yaml`
-          echo "STAGE=${STAGE:=unstable}" >> $GITHUB_ENV
+          VERTSION=$(yq e '.version' build.yaml)
+          echo "STAGE=${STAGE:-unstable}" >> $GITHUB_ENV
           echo "MAJOR_MINOR=${VERTSION%.*}" >> $GITHUB_ENV
           echo "SEMVER=${VERTSION}" >> $GITHUB_ENV
           echo "SHORT_SHA=${GITHUB_SHA::8}" >> $GITHUB_ENV
