@@ -1,12 +1,12 @@
 name: '🚀 Publish OS Packages'
 
 on:
-  push:
-    branches:
-      - master
-      - main
-    tags:
-      - 'v*'
+#  push:
+#    branches:
+#      - master
+#      - main
+#    tags:
+#      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -17,21 +17,21 @@ jobs:
     strategy:
       matrix:
         build-config:
-#          - centos.amd64
-#          - fedora.amd64
+          - centos.amd64
+          - fedora.amd64
           - debian.amd64
-#          - debian.arm64
-#          - debian.armhf
-#          - ubuntu.amd64
-#          - ubuntu.arm64
-#          - ubuntu.armhf
-#          - linux.amd64
-#          - linux.amd64-musl
-#          - linux.arm64
-#          - linux.armhf
-#          - windows.amd64
-#          - macos
-#          - portable
+          - debian.arm64
+          - debian.armhf
+          - ubuntu.amd64
+          - ubuntu.arm64
+          - ubuntu.armhf
+          - linux.amd64
+          - linux.amd64-musl
+          - linux.arm64
+          - linux.armhf
+          - windows.amd64
+          - macos
+          - portable
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -67,12 +67,8 @@ jobs:
             -e BUILD_ID=${{ github.run_id }} \
             jellyfin-server:${{ matrix.build-config }}
 
-      - name: debug
-        run: ls -lR deployment/dist
-
       - name: Publish Artifacts
         uses: actions/upload-artifact@v2
-        if: ${{ matrix.build-config == 'Release' }}
         with:
-          name: jellyfin-server:${{ matrix.build-config }}
+          name: jellyfin-server-${{ matrix.build-config }}
           path: deployment/dist
