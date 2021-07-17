@@ -1,0 +1,55 @@
+name: '🚀 Publish Container Images'
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  docker:
+    name: Build Container Images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build-config:
+          - amd64
+          - arm64
+          - armhf
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup YQ
+        uses: chrisdickinson/setup-yq@latest
+        with:
+          yq-version: v4.10.0
+
+      - name: Setup Variables
+        run: |
+          if [[ "${GITHUB_REF}" =~ '^refs/tags/v.*$' ]]; then
+            STAGE='stable'
+          fi
+
+          VERTSION=$(yq e '.version' build.yaml)
+          echo "STAGE=${STAGE:=unstable}" >> $GITHUB_ENV
+          echo "MAJOR_MINOR=${VERTSION%.*}" >> $GITHUB_ENV
+          echo "SEMVER=${VERTSION}" >> $GITHUB_ENV
+          echo "SHORT_SHA=${GITHUB_SHA::8}" >> $GITHUB_ENV
+
+      - name: Build Server Image
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: jellyfin-server
+          tags: >-
+            ${{ env.STAGE }}-${{ matrix.build-config }}
+            ${{ env.STAGE }}-${{ env.MAJOR_MINOR }}-${{ matrix.build-config }}
+            ${{ env.STAGE }}-${{ env.SEMVER }}-${{ matrix.build-config }}
+            ${{ env.SHORT_SHA }}-${{ matrix.build-config }}
+          oci: true
+          arch: ${{ matrix.build-config }}
+          dockerfiles: deployment/Dockerfile.docker.${{ matrix.build-config }}
