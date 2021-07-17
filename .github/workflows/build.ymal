@@ -1,0 +1,60 @@
+name: '🏗️ Build'
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request_target:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: JF Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build-config:
+          - Release
+          - Debug
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Get Date
+        id: get-date
+        shell: bash
+        run: echo "::set-output name=date::$(/bin/date -u "+%Y%W")"
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ steps.get-date.outputs.date }}
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Run Build
+        shell: bash
+        run: |-
+          mkdir -p ci-artifact
+          dotnet publish Jellyfin.Server/Jellyfin.Server.csproj \
+            --configuration ${{ matrix.build-config }} \
+            --output ci-artifact \
+            --nologo
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ matrix.build-config == Release }}
+        with:
+          name: server-artifacts
+          path: |-
+            ci-artifact/Jellyfin.Server/Emby.Naming.dll
+            ci-artifact/Jellyfin.Server/MediaBrowser.Controller.dll
+            ci-artifact/Jellyfin.Server/MediaBrowser.Model.dll
+            ci-artifact/Jellyfin.Server/MediaBrowser.Common.dll
