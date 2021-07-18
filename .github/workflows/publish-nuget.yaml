@@ -2,9 +2,9 @@ name: '🚀 Publish NuGet Packages'
 
 on:
   push:
-    branches:
-      - master
-      - main
+#    branches:
+#      - master
+#      - main
     tags:
       - 'v*'
   workflow_dispatch:
