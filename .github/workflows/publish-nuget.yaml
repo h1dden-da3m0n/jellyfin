@@ -69,8 +69,8 @@ jobs:
       - name: Add GitHub NuGet Source
         run: |-
           dotnet nuget add source \
-            --username ${{ github.actor }} \
-            --password ${{ secrets.GITHUB_TOKEN }} \
+            --username ${{ github.repository_owner }} \
+            --password ${{ secrets.GH_TOKEN }} \
             --store-password-in-clear-text \
             --name github \
             "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
@@ -80,7 +80,6 @@ jobs:
         run: |-
           dotnet nuget push nuget-artifacts/**/*.nupkg \
             --skip-duplicate \
-            --api-key ${{ secrets.GITHUB_TOKEN }} \
             --source github
 
       - name: Push NuGet Packages (unstable - GitHub.com)
@@ -88,5 +87,4 @@ jobs:
         run: |-
           dotnet nuget push nuget-artifacts/**/*.nupkg \
             --skip-duplicate \
-            --api-key ${{ secrets.GITHUB_TOKEN }} \
             --source github
