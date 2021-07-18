@@ -1,0 +1,63 @@
+name: '🚀 Publish NuGet Packages'
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  nuget:
+    name: Build Server NuGets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Setup Variables
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "SEMVER=${TAG}" >> $GITHUB_ENV
+
+      - name: Build NuGet Packages (stable)
+        if: ${{ contains(github.ref, 'refs/tags/v') }}
+        run: |-
+          mkdir nuget-artifacts
+          for nugetProj in Jellyfin.Data/Jellyfin.Data.csproj \
+              MediaBrowser.Common/MediaBrowser.Common.csproj \
+              MediaBrowser.Controller/MediaBrowser.Controller.csproj \
+              MediaBrowser.Model/MediaBrowser.Model.csproj \
+              Emby.Naming/Emby.Naming.csproj; do
+            dotnet pack ${nugetProj} \
+              -o nuget-artifacts \
+              -p:Version=${SEMVER}
+          done
+
+      - name: Build NuGet Packages (unstable)
+        if: ${{ ! contains(github.ref, 'refs/tags/v') }}
+        run: |-
+          mkdir nuget-artifacts
+          for nugetProj in Jellyfin.Data/Jellyfin.Data.csproj \
+              MediaBrowser.Common/MediaBrowser.Common.csproj \
+              MediaBrowser.Controller/MediaBrowser.Controller.csproj \
+              MediaBrowser.Model/MediaBrowser.Model.csproj \
+              Emby.Naming/Emby.Naming.csproj; do
+            dotnet pack ${nugetProj} \
+              -o nuget-artifacts \
+              --version-suffix ${{ github.run_id }} \
+              -p:Stability=Unstable
+          done
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: jellyfin-nuget-packages
+          path: nuget-artifacts
