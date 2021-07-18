@@ -79,6 +79,7 @@ jobs:
         if: ${{ contains(github.ref, 'refs/tags/v') }}
         run: |-
           dotnet nuget push nuget-artifacts/**/*.nupkg \
+            --api-key ${{ secrets.GH_TOKEN }} \
             --skip-duplicate \
             --source github
 
@@ -86,5 +87,6 @@ jobs:
         if: ${{ ! contains(github.ref, 'refs/tags/v') }}
         run: |-
           dotnet nuget push nuget-artifacts/**/*.nupkg \
+            --api-key ${{ secrets.GH_TOKEN }} \
             --skip-duplicate \
             --source github
