@@ -1,0 +1,39 @@
+name: '🚀 Publish OpenAPI Spec'
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  open-api:
+    name: Generate and Publish OpenAPI Spec
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Generate OpenAPI Spec
+        run: |-
+          mkdir openApi-artifacts
+          dotnet test tests/Jellyfin.Server.Integration.Tests/*.csproj \
+            --filter "Jellyfin.Server.Integration.Tests.OpenApiSpecTests" \
+            --configuration Release \
+            -o openApi-artifacts \
+            --verbosity minimal \
+            --nologo
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: jellyfin-openapi-spec
+          path: openApi-artifacts/openapi.json
