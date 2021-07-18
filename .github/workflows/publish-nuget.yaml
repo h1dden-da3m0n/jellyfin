@@ -38,7 +38,9 @@ jobs:
               Emby.Naming/Emby.Naming.csproj; do
             dotnet pack ${nugetProj} \
               -o nuget-artifacts \
-              -p:Version=${SEMVER}
+              -p:Version=${SEMVER} \
+              --verbosity minimal \
+              --nologo
           done
 
       - name: Build NuGet Packages (unstable)
@@ -53,7 +55,9 @@ jobs:
             dotnet pack ${nugetProj} \
               -o nuget-artifacts \
               --version-suffix ${{ github.run_id }} \
-              -p:Stability=Unstable
+              -p:Stability=Unstable \
+              --verbosity minimal \
+              --nologo
           done
 
       - name: Publish Artifacts
@@ -61,3 +65,26 @@ jobs:
         with:
           name: jellyfin-nuget-packages
           path: nuget-artifacts
+
+      - name: Add GitHub NuGet Source
+        run: |-
+          dotnet nuget add source \
+            --username USERNAME \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text \
+            --name github \
+            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+      - name: Push NuGet Packages (stable - GitHub.com)
+        if: ${{ contains(github.ref, 'refs/tags/v') }}
+        run: |-
+          dotnet nuget push nuget-artifacts/**/*.nupkg \
+            --skip-duplicate \
+            --source github
+
+      - name: Push NuGet Packages (unstable - GitHub.com)
+        if: ${{ ! contains(github.ref, 'refs/tags/v') }}
+        run: |-
+          dotnet nuget push nuget-artifacts/**/*.nupkg \
+            --skip-duplicate \
+            --source github
