@@ -80,7 +80,7 @@ jobs:
         run: |-
           dotnet nuget push nuget-artifacts/**/*.nupkg \
             --skip-duplicate \
-            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --api-key ${{ secrets.GH_TOKEN }} \
             --source github
 
       - name: Push NuGet Packages (unstable - GitHub.com)
@@ -88,5 +88,5 @@ jobs:
         run: |-
           dotnet nuget push nuget-artifacts/**/*.nupkg \
             --skip-duplicate \
-            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --api-key ${{ secrets.GH_TOKEN }} \
             --source github
