@@ -13,8 +13,8 @@ jobs:
   docker:
     name: Build Container Images
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         include:
           - image-tag: amd64
@@ -88,6 +88,8 @@ jobs:
           oci: true
           arch: ${{ matrix.image-config }}
           dockerfiles: deployment/Dockerfile.docker.${{ matrix.image-tag }}
+          build-args: |-
+            JELLYFIN_VERSION=${{ env.SEMVER }}
       
       - name: Publish Server Image to quay.io
         uses: redhat-actions/push-to-registry@v2
