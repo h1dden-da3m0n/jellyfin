@@ -36,7 +36,7 @@ ARG LEVEL_ZERO_VERSION=1.0.18421
 # mesa-va-drivers: needed for AMD VAAPI. Mesa >= 20.1 is required for HEVC transcoding.
 RUN apt-get update -qyy \
     && apt-get install -qyy --no-install-recommends --no-install-suggests ca-certificates gnupg wget apt-transport-https \
-    && wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | apt-key add - \
+    && wget -qO - https://repo.jellyfin.org/jellyfin_team.gpg.key | apt-key add - \
     && echo 'deb [arch=amd64] https://repo.jellyfin.org/debian buster main' > /etc/apt/sources.list.d/jellyfin.list \
     && cat /etc/apt/sources.list.d/jellyfin.list \
     && apt-get update -qyy \
@@ -47,12 +47,12 @@ RUN apt-get update -qyy \
 # Do not use the intel-opencl-icd package from repo since they will not build with RELEASE_WITH_REGKEYS enabled.
     && mkdir intel-compute-runtime \
     && cd intel-compute-runtime \
-    && wget https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-gmmlib_${GMMLIB_VERSION}_amd64.deb \
-    && wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-${IGC_VERSION}/intel-igc-core_${IGC_VERSION}_amd64.deb \
-    && wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-${IGC_VERSION}/intel-igc-opencl_${IGC_VERSION}_amd64.deb \
-    && wget https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-opencl_${NEO_VERSION}_amd64.deb \
-    && wget https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-ocloc_${NEO_VERSION}_amd64.deb \
-    && wget https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-level-zero-gpu_${LEVEL_ZERO_VERSION}_amd64.deb \
+    && wget -q https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-gmmlib_${GMMLIB_VERSION}_amd64.deb \
+    && wget -q https://github.com/intel/intel-graphics-compiler/releases/download/igc-${IGC_VERSION}/intel-igc-core_${IGC_VERSION}_amd64.deb \
+    && wget -q https://github.com/intel/intel-graphics-compiler/releases/download/igc-${IGC_VERSION}/intel-igc-opencl_${IGC_VERSION}_amd64.deb \
+    && wget -q https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-opencl_${NEO_VERSION}_amd64.deb \
+    && wget -q https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-ocloc_${NEO_VERSION}_amd64.deb \
+    && wget -q https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-level-zero-gpu_${LEVEL_ZERO_VERSION}_amd64.deb \
     && dpkg -i *.deb \
     && cd .. \
     && rm -rf intel-compute-runtime \
@@ -69,3 +69,4 @@ COPY . /jellyfin/jellyfin
 EXPOSE 8096/tcp
 VOLUME [ "${JELLYFIN_MEDIA_DIR}", "${JELLYFIN_DATA_DIR}", "${JELLYFIN_CACHE_DIR}" ]
 ENTRYPOINT [ "/jellyfin/jellyfin" ]
+CMD ["--nowebcontent"]
