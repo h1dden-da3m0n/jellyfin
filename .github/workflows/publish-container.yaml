@@ -81,7 +81,7 @@ jobs:
         with:
           image: jellyfin-server
           tags: >-
-            ${{ env.STAGE }}-${{ matrix.build-config }}
+            ${{ env.STAGE }}-${{ matrix.image-tag }}
             ${{ env.STAGE }}-${{ env.MAJOR_MINOR }}-${{ matrix.image-tag }}
             ${{ env.STAGE }}-${{ env.SEMVER }}-${{ matrix.image-tag }}
             ${{ env.SHORT_SHA }}-${{ matrix.image-tag }}
