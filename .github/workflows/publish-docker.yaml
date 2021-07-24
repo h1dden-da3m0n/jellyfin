@@ -60,7 +60,7 @@ jobs:
           VERSION=`yq e '.version' build.yaml`
           echo "STAGE=${STAGE:-unstable}" >> $GITHUB_ENV
           echo "MAJOR_MINOR=${VERSION%.*}" >> $GITHUB_ENV
-          echo "SEMVER=${VERTSION}" >> $GITHUB_ENV
+          echo "SEMVER=${VERSION}" >> $GITHUB_ENV
           echo "SHORT_SHA=${GITHUB_SHA::8}" >> $GITHUB_ENV
 
       - name: Build Server against OS arch
@@ -87,7 +87,7 @@ jobs:
             ${{ env.SHORT_SHA }}-${{ matrix.image-tag }}
           oci: true
           arch: ${{ matrix.image-config }}
-          dockerfiles: deployment/Dockerfile.docker.${{ matrix.build-config }}
+          dockerfiles: deployment/Dockerfile.docker.${{ matrix.image-tag }}
       
       - name: Publish Server Image to quay.io
         uses: redhat-actions/push-to-registry@v2
