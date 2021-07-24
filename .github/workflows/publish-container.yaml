@@ -91,7 +91,7 @@ jobs:
             ${{ env.STAGE }}-${{ env.SEMVER }}-${{ matrix.image-tag }}
             ${{ env.SHORT_SHA }}-${{ matrix.image-tag }}
           oci: true
-#          arch: ${{ matrix.image-config }}
+          arch: ${{ matrix.image-config }}
           dockerfiles: deployment/Dockerfile.docker.${{ matrix.image-tag }}
           build-args: |-
             JELLYFIN_VERSION=${{ env.SEMVER }}
