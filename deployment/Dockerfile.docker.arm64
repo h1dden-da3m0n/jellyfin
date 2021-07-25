@@ -16,7 +16,6 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT="true" \
     JELLYFIN_CACHE_DIR="/cache" \
     JELLYFIN_CONFIG_DIR="/config/config" \
     JELLYFIN_LOG_DIR="/config/log" \
-    JELLYFIN_WEB_DIR="/jellyfin/jellyfin-web" \
     JELLYFIN_FFMPEG="/usr/lib/jellyfin-ffmpeg/ffmpeg"
 
 # Open Container Initiative metadata labels
@@ -31,23 +30,23 @@ LABEL \
 
 # Install dependencies:
 #   libomxil-bellagio0: needed for OpenMax IL
-RUN apt-get update -qy \
-    && apt-get install -qy --no-install-recommends --no-install-suggests ca-certificates gnupg wget apt-transport-https \
+RUN apt-get update -qyy \
+    && apt-get install -qyy --no-install-recommends --no-install-suggests ca-certificates gnupg wget apt-transport-https \
     && wget -qO - https://repo.jellyfin.org/jellyfin_team.gpg.key | apt-key add - \
     && echo 'deb [arch=arm64] https://repo.jellyfin.org/debian buster main' > /etc/apt/sources.list.d/jellyfin.list \
-    && apt-get update -qy \
-    && apt-get install -qy --no-install-recommends --no-install-suggests libomxil-bellagio0 libomxil-bellagio-bin jellyfin-ffmpeg openssl locales libfontconfig1 libfreetype6 \
-    && apt-get remove -qy gnupg wget apt-transport-https \
-    && apt-get clean autoclean -qy \
-    && apt-get autoremove -qy \
+    && apt-get update -qyy \
+    && apt-get install -qyy --no-install-recommends --no-install-suggests libomxil-bellagio0 libomxil-bellagio-bin jellyfin-ffmpeg openssl locales libfontconfig1 libfreetype6 \
+    && apt-get remove -qyy gnupg wget apt-transport-https \
+    && apt-get clean autoclean -qyy \
+    && apt-get autoremove -qyy \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p ${JELLYFIN_MEDIA_DIR} ${JELLYFIN_DATA_DIR} ${JELLYFIN_CACHE_DIR} \
     && chmod 777 ${JELLYFIN_MEDIA_DIR} ${JELLYFIN_DATA_DIR} ${JELLYFIN_CACHE_DIR} \
     && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen
 
-COPY . /jellyfin/jellyfin
+COPY . /opt/jellyfin
 
 EXPOSE 8096/tcp
 VOLUME [ "${JELLYFIN_MEDIA_DIR}", "${JELLYFIN_DATA_DIR}", "${JELLYFIN_CACHE_DIR}" ]
-ENTRYPOINT [ "/jellyfin/jellyfin" ]
-CMD ["--nowebcontent"]
+ENTRYPOINT [ "/opt/jellyfin/jellyfin" ]
+CMD [ "--nowebcontent" ]

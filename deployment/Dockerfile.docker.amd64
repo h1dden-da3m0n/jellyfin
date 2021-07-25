@@ -13,7 +13,6 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT="true" \
     JELLYFIN_CACHE_DIR="/cache" \
     JELLYFIN_CONFIG_DIR="/config/config" \
     JELLYFIN_LOG_DIR="/config/log" \
-    JELLYFIN_WEB_DIR="/jellyfin/jellyfin-web" \
     JELLYFIN_FFMPEG="/usr/lib/jellyfin-ffmpeg/ffmpeg"
 
 # Open Container Initiative metadata labels
@@ -64,9 +63,9 @@ RUN apt-get update -qyy \
     && chmod 777 ${JELLYFIN_MEDIA_DIR} ${JELLYFIN_DATA_DIR} ${JELLYFIN_CACHE_DIR} \
     && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen
 
-COPY . /jellyfin/jellyfin
+COPY . /opt/jellyfin
 
 EXPOSE 8096/tcp
 VOLUME [ "${JELLYFIN_MEDIA_DIR}", "${JELLYFIN_DATA_DIR}", "${JELLYFIN_CACHE_DIR}" ]
-ENTRYPOINT [ "/jellyfin/jellyfin" ]
-CMD ["--nowebcontent"]
+ENTRYPOINT [ "/opt/jellyfin/jellyfin" ]
+CMD [ "--nowebcontent" ]
