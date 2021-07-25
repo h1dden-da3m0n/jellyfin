@@ -93,6 +93,7 @@ jobs:
           oci: true
           arch: ${{ matrix.image-config }}
           dockerfiles: deployment/Dockerfile.docker.${{ matrix.image-tag }}
+          context: ci-artifact
           build-args: |-
             JELLYFIN_VERSION=${{ env.SEMVER }}
       
