@@ -5,8 +5,9 @@ on:
 #    branches:
 #      - master
 #      - main
-#    tags:
-#      - 'v*'
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 jobs:
@@ -36,6 +37,10 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
+      - name: Setup Env
+        run: |-
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Build Packaging Container
         id: build-image
         uses: redhat-actions/buildah-build@v2
@@ -46,7 +51,7 @@ jobs:
           dockerfiles: deployment/Dockerfile.${{ matrix.build-config }}
 
       - name: Run Packaging Container (stable)
-        if: ${{ contains(github.ref, 'refs/tags/v') }}
+        if: ${{ github.event_name == 'release' }}
         run: |-
           mkdir -p deployment/dist
           podman run --rm \
@@ -57,7 +62,7 @@ jobs:
             jellyfin-server:${{ matrix.build-config }}
 
       - name: Run Packaging Container (unstable)
-        if: ${{ ! contains(github.ref, 'refs/tags/v') }}
+        if: ${{ github.event_name != 'release' }}
         run: |-
           mkdir -p deployment/dist
           podman run --rm \
@@ -72,3 +77,4 @@ jobs:
         with:
           name: jellyfin-server-${{ matrix.build-config }}
           path: deployment/dist
+
