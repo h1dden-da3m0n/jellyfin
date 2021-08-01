@@ -5,8 +5,9 @@ on:
     branches:
       - master
       - main
-    tags:
-      - 'v*'
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 jobs:
