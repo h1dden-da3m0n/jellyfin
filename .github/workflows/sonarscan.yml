@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-  pull_request_target:
+  pull_request:
     branches:
       - master
   workflow_dispatch:
@@ -54,7 +54,7 @@ jobs:
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
       - name: Set variables (branch)
-        if: ${{ github.event_name != 'pull_request_target' }}
+        if: ${{ github.event_name != 'pull_request' }}
         shell: bash
         run: |-
           BRANCH="${{ github.ref }}"
@@ -63,7 +63,7 @@ jobs:
 
 
       - name: Set variables (PullRequest)
-        if: ${{ github.event_name == 'pull_request_target' }}
+        if: ${{ github.event_name == 'pull_request' }}
         shell: bash
         run: |-
           SRC_BRANCH="${{ github.head_ref }}"
@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
-        if: ${{ github.event_name != 'pull_request_target' }}
+        if: ${{ github.event_name != 'pull_request' }}
         run: |-
           .\.sonar\scanner\dotnet-sonarscanner begin `
             -o:"h1dden-da3m0n" `
@@ -106,7 +106,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
-        if: ${{ github.event_name == 'pull_request_target' }}
+        if: ${{ github.event_name == 'pull_request' }}
         run: |-
           .\.sonar\scanner\dotnet-sonarscanner begin `
             -o:"h1dden-da3m0n" `
@@ -117,6 +117,7 @@ jobs:
             -d:sonar.cs.vstest.reportsPaths=TestResults/*.trx `
             -d:sonar.cs.opencover.reportsPaths=TestResults/*/coverage.opencover.xml `
             -d:sonar.coverage.exclusions="**Test*.cs" `
+            -d:sonar.branch.name="${{ env.BRANCH }}" `
             -d:sonar.pullrequest.key="${{ env.PR_NR }}" `
             -d:sonar.pullrequest.branch="${{ env.SRC_BRANCH }}" `
             -d:sonar.pullrequest.base="${{ env.TGT_BRANCH }}"
