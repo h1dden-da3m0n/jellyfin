@@ -69,6 +69,7 @@ jobs:
 
     env:
       SHORT_SHA: ${{ needs.setup-vars.outputs.short-sha }}
+      VERSION: ${{ needs.setup-vars.outputs.version }}
 
     steps:
       - name: Checkout repository
@@ -90,7 +91,7 @@ jobs:
             -v $(pwd)/deployment/dist:/dist \
             -v $(pwd):/jellyfin \
             -e IS_UNSTABLE="no" \
-            -e BUILD_ID=${{ env.SHORT_SHA }} \
+            -e BUILD_ID=${{ env.VERSION }} \
             jellyfin-server:${{ matrix.build-config }}
 
       - name: Run packaging container (unstable)
@@ -101,7 +102,7 @@ jobs:
             -v $(pwd)/deployment/dist:/dist \
             -v $(pwd):/jellyfin \
             -e IS_UNSTABLE="yes" \
-            -e BUILD_ID=${{ env.SHORT_SHA }} \
+            -e BUILD_ID=${{ env.VERSION }} \
             jellyfin-server:${{ matrix.build-config }}
 
       - name: Publish artifacts
