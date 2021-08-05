@@ -19,7 +19,7 @@ jobs:
   scan-container:
     name: Scan Container Image
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'jellyfin/jellyfin' }}
+#    if: ${{ github.repository == 'jellyfin/jellyfin' }}
 
     steps:
       - name: Checkout repository
