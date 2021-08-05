@@ -1,0 +1,90 @@
+name: '🚀 Publish NuGet Packages'
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+jobs:
+  nuget:
+    name: Build Server NuGets
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'jellyfin/jellyfin' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Setup variables
+        run: |-
+          if [[ "${GITHUB_REF}" =~ '^refs/tags/v.*$' ]]; then
+            TAG=${GITHUB_REF#refs/tags/v}
+            echo "SEMVER=${TAG}" >> $GITHUB_ENV
+          fi
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Build NuGet packages (stable)
+        if: ${{ github.event_name == 'release' }}
+        run: |-
+          mkdir nuget-artifacts
+          for nugetProj in Jellyfin.Data/Jellyfin.Data.csproj \
+              MediaBrowser.Common/MediaBrowser.Common.csproj \
+              MediaBrowser.Controller/MediaBrowser.Controller.csproj \
+              MediaBrowser.Model/MediaBrowser.Model.csproj \
+              Emby.Naming/Emby.Naming.csproj; do
+            dotnet pack ${nugetProj} \
+              --configuration Release \
+              -p:Version=${{ env.SEMVER }} \
+              --output nuget-artifacts \
+              --verbosity minimal \
+              --nologo
+          done
+
+      - name: Build NuGet packages (unstable)
+        if: ${{ github.event_name != 'release' }}
+        run: |-
+          mkdir nuget-artifacts
+          for nugetProj in Jellyfin.Data/Jellyfin.Data.csproj \
+              MediaBrowser.Common/MediaBrowser.Common.csproj \
+              MediaBrowser.Controller/MediaBrowser.Controller.csproj \
+              MediaBrowser.Model/MediaBrowser.Model.csproj \
+              Emby.Naming/Emby.Naming.csproj; do
+            dotnet pack ${nugetProj} \
+              --configuration Release \
+              --version-suffix ${{ env.SHORT_SHA }} \
+              -p:Stability=Unstable \
+              --output nuget-artifacts \
+              --verbosity minimal \
+              --nologo
+          done
+
+      - name: Publish artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: jellyfin-nuget-packages
+          path: nuget-artifacts
+
+      - name: Push NuGet packages (NuGet.org)
+        continue-on-error: true
+        run: |-
+          dotnet nuget push nuget-artifacts/**/*.nupkg \
+            --api-key ${{ secrets.NuGetAPI }} \
+            --skip-duplicate \
+            --source nuget.org
+
+      - name: Push NuGet packages (GitHub.com)
+        continue-on-error: true
+        run: |-
+          dotnet nuget push nuget-artifacts/**/*.nupkg \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --skip-duplicate \
+            --source github
