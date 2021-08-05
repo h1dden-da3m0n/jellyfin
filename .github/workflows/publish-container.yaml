@@ -16,11 +16,11 @@ jobs:
 #    if: ${{ github.repository == 'jellyfin/jellyfin' }}
 
     outputs:
-      stage: steps.variables.outputs.stage
-      short-sha: steps.variables.outputs.short-sha
-      major-minor: steps.variables.outputs.major-minor
-      version: steps.variables.outputs.version
-      year-week: steps.variables.outputs.year-week
+      stage: ${{ steps.variables.outputs.stage }}
+      short-sha: ${{ steps.variables.outputs.short-sha }}
+      major-minor: ${{ steps.variables.outputs.major-minor }}
+      version: ${{ steps.variables.outputs.version }}
+      year-week: ${{ steps.variables.outputs.year-week }}
 
     steps:
       - name: Checkout repository

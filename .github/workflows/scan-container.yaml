@@ -63,7 +63,7 @@ jobs:
       - name: Build headles Server Image
         uses: redhat-actions/buildah-build@v2
         with:
-          image: jellyfin-server
+          image: docker.io/jellyfin-server
           tags: unstable-${{ env.SHORT_SHA }}-amd64
           dockerfiles: deployment/Dockerfile.docker.amd64
           context: ci-artifact
@@ -73,7 +73,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.0.19
         with:
-          image-ref: jellyfin-server:unstable-${{ env.SHORT_SHA }}-amd64
+          image-ref: docker.io/jellyfin-server:unstable-${{ env.SHORT_SHA }}-amd64
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true

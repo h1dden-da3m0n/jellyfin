@@ -16,10 +16,10 @@ jobs:
 #    if: ${{ github.repository == 'jellyfin/jellyfin' }}
 
     outputs:
-      version: steps.variables.outputs.version
-      short-sha: steps.variables.outputs.short-sha
-      unstable: steps.variables.outputs.unstable
-      has-diff: steps.diff.outputs.has-diff
+      version: ${{ steps.variables.outputs.version }}
+      short-sha: ${{ steps.variables.outputs.short-sha }}
+      unstable: ${{ steps.variables.outputs.unstable }}
+      has-diff: ${{ steps.diff.outputs.has-diff }}
 
     steps:
       - name: Checkout repository
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.open-api.outputs.has-diff == 'true' }}
     needs:
-      - open-api
+      - openapi
 
     strategy:
       fail-fast: false
@@ -144,9 +144,9 @@ jobs:
 #          event-type: trigger-update
 #          client-payload: |-
 #            {
-#              "version": "${{ needs.open-api.outputs.version }}",
-#              "server-sha": "${{ needs.open-api.outputs.short-sha }}",
-#              "unstable": ${{ needs.open-api.outputs.unstable }}
+#              "version": "${{ needs.openapi.outputs.version }}",
+#              "server-sha": "${{ needs.openapi.outputs.short-sha }}",
+#              "unstable": ${{ needs.openapi.outputs.unstable }}
 #            }
       - name: Debug
         run: |-
