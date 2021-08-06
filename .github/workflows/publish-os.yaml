@@ -98,11 +98,12 @@ jobs:
         if: ${{ github.event_name != 'release' }}
         run: |-
           mkdir -p deployment/dist
+          BUILD_VERSION=${{ env.VERSION }}
           podman run --rm \
             -v $(pwd)/deployment/dist:/dist \
             -v $(pwd):/jellyfin \
             -e IS_UNSTABLE="yes" \
-            -e BUILD_ID=${{ env.VERSION }} \
+            -e BUILD_ID=${BUILD_VERSION%.*}${{ env.SHORT_SHA }} \
             jellyfin-server:${{ matrix.build-config }}
 
       - name: Publish artifacts
